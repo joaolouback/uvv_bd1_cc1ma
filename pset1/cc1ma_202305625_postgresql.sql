@@ -17,8 +17,10 @@
 
  ENCRYPTED PASSWORD '$1$xqNB5ctg$DLQ0sQv4jngw5zSNIzmIB0';
 
+
 COMMENT ON ROLE jpestevao
-IS 'Este é um usuário administrativo do BD UVV.';
+
+       IS 'Este é um usuário administrativo do BD UVV.';
 
 
 
@@ -48,18 +50,18 @@ allow_connections = true;
 
 
 COMMENT ON DATABASE uvv
-IS 'Banco de Dados UVV.';
+
+       IS 'Banco de Dados UVV.';
 
 
 
---Garante privilegios ao usuario jpestevao
+--- Garante privilegios ao usuario jpestevao.
 
 GRANT ALL PRIVILEGES ON DATABASE uvv TO jpestevao;
 
 
 
-
-
+-- Comando usado para acessar o banco de dados.
 
 \c "dbname=uvv user=jpestevao password=$1$xqNB5ctg$DLQ0sQv4jngw5zSNIzmIB0";
 
@@ -106,12 +108,14 @@ CREATE TABLE Lojas.produtos (
        CONSTRAINT produtos_pk PRIMARY KEY (produto_id)
 );
 
+COMMENT ON TABLE Lojas.produtos
+IS 'Esta tabela armazena informações dos produtos disponíveis na loja.';
+
+
 ALTER TABLE Lojas.produtos
 ADD CONSTRAINT preco_check
   CHECK (preco_unitario >= 0);
 
-COMMENT ON TABLE Lojas.produtos
-IS 'Esta tabela armazena informações dos produtos disponíveis na loja.';
 
 COMMENT ON COLUMN Lojas.produtos.produto_id IS 'Identificador do produto (chave primaria)';
 COMMENT ON COLUMN Lojas.produtos.nome IS 'Nome do produto';
@@ -142,13 +146,14 @@ CREATE TABLE Lojas.lojas (
        CONSTRAINT lojas_pk PRIMARY KEY (loja_id)
 );
 
+COMMENT ON TABLE Lojas.lojas
+IS 'Esta tabela armazena informações das lojas cadastradas.';
+
+
 ALTER TABLE Lojas.lojas
 ADD CONSTRAINT endereco_check
 CHECK (endereco_web IS NOT NULL OR endereco_fisico IS NOT NULL);
 
-
-COMMENT ON TABLE Lojas.lojas
-IS 'Esta tabela armazena informações das lojas cadastradas.';
 
 COMMENT ON COLUMN Lojas.lojas.loja_id IS 'Identificador da loja ( chave primaria)';
 COMMENT ON COLUMN Lojas.lojas.nome IS 'Nome da loja';
@@ -177,6 +182,11 @@ CREATE TABLE Lojas.estoques (
 COMMENT ON TABLE Lojas.estoques
 IS 'Esta tabela armazena informações de estoque dos produtos em cada loja.';
 
+ALTER TABLE lojas.estoques
+ADD CONSTRAINT quantidade_check
+  CHECK (quantidade >= 0);
+
+  
 ALTER TABLE Lojas.estoques ADD CONSTRAINT lojas_estoques_fk
 FOREIGN KEY (loja_id)
 REFERENCES Lojas.lojas (loja_id)
@@ -191,9 +201,7 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE lojas.estoques
-ADD CONSTRAINT quantidade_check
-  CHECK (quantidade >= 0);
+
 
 COMMENT ON COLUMN Lojas.estoques.estoque_id IS 'Identificado do estoque (chave primaria)';
 COMMENT ON COLUMN Lojas.estoques.loja_id IS 'Identificador da loja (chave estrangeira referenciando a tabela lojas)';
@@ -237,12 +245,14 @@ CREATE TABLE Lojas.envios (
        CONSTRAINT envios_pk PRIMARY KEY (envio_id)
 );
 
+COMMENT ON TABLE Lojas.envios
+IS 'Esta tabela armazena informações sobre os envios de produtos para os clientes.';
+
+
 ALTER TABLE Lojas.envios
 ADD CONSTRAINT envios_status_check
 CHECK (status IN ('CRIADO', 'ENVIADO', 'TRANSITO', 'ENTREGUE'));
 
-COMMENT ON TABLE Lojas.envios
-IS 'Esta tabela armazena informações sobre os envios de produtos para os clientes.';
 
 ALTER TABLE Lojas.envios ADD CONSTRAINT lojas_envios_fk
 FOREIGN KEY (loja_id)
@@ -277,13 +287,14 @@ CREATE TABLE Lojas.pedidos (
        CONSTRAINT pedidos_pk PRIMARY KEY (pedido_id)
 );
 
+COMMENT ON TABLE Lojas.pedidos
+IS 'Esta tabela armazena informações sobre os pedidos realizados pelos clientes.';
+
+
 ALTER TABLE Lojas.pedidos
 ADD CONSTRAINT pedidos_status_check
 CHECK (status IN ('CANCELADO', 'COMPLETO', 'ABERTO', 'PAGO', 'REEMBOLSADO', 'ENVIADO'));
 
-
-COMMENT ON TABLE Lojas.pedidos
-IS 'Esta tabela armazena informações sobre os pedidos realizados pelos clientes.';
 
 ALTER TABLE Lojas.pedidos ADD CONSTRAINT clientes_pedidos_fk
 FOREIGN KEY (cliente_id)
@@ -343,6 +354,11 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
+ALTER TABLE lojas.pedidos_itens
+ADD CONSTRAINT quantidade_check
+  CHECK (quantidade >= 0);
+
+
 
 COMMENT ON COLUMN Lojas.pedidos_itens.pedido_id IS 'Identificador do pedido (chave composta (PK e FK) referenciando a tabela pedidos)';
 COMMENT ON COLUMN Lojas.pedidos_itens.produto_id IS 'Identificador do produto (chave composta (PK e FK) referenciando a tabela produtos)';
@@ -350,63 +366,3 @@ COMMENT ON COLUMN Lojas.pedidos_itens.numero_da_linha IS 'Número da linha do it
 COMMENT ON COLUMN Lojas.pedidos_itens.preco_unitario IS 'Preço unitário do produto no momento do pedido';
 COMMENT ON COLUMN Lojas.pedidos_itens.quantidade IS 'Quantidade solicitada do produto';
 COMMENT ON COLUMN Lojas.pedidos_itens.envio_id IS 'Identificador do envio (chave estrangeira referenciando a tabela envios)';
-
-
-
--- -- -- Inserção dos Dados nas tabelas referentes (teste) -- -- --
-
--- Inserção dos Dados na tabela produtos.
-
-INSERT INTO Lojas.produtos (produto_id, nome, preco_unitario, detalhes, imagem, imagem_mime_type, imagem_arquivo, imagem_charset, imagem_ultima_atualizacao)
-VALUES
-   (1, 'Produto 1', 10.99, 'Detalhes do produto 1', NULL, NULL, NULL, NULL, NULL),
-   (2, 'Produto 2', 15.99, 'Detalhes do produto 2', NULL, NULL, NULL, NULL, NULL),
-   (3, 'Produto 3', 20.99, 'Detalhes do produto 3', NULL, NULL, NULL, NULL, NULL);
-
--- Inserção dos Dados na tabela lojas.
-
-INSERT INTO Lojas.lojas (loja_id, nome, endereco_web, endereco_fisico, latitude, longitude, logo, logo_mime_type, logo_arquivo, logo_charset, logo_ultima_atualizacao)
-VALUES
-    (1, 'Loja 1', 'https://www.loja1.com', null, 123.456, 789.123, null, null, null, null, null),
-    (2, 'Loja 2', null, 'Rua da Loja 2', 456.789, 321.987, null, null, null, null, null),
-    (3, 'Loja 3', 'https://www.loja3.com', 'Rua da Loja 3', 789.123, 654.321, null, null, null, null, null);
-
--- Inserção dos Dados na tabela estoques.
-
-INSERT INTO Lojas.estoques (estoque_id, loja_id, produto_id, quantidade)
-VALUES
-   (1, 1, 1, 100),
-   (2, 2, 2, 200),
-   (3, 3, 3, 300);
-
--- Inserção dos Dados na tabela clientes.
-
-INSERT INTO Lojas.clientes (cliente_id, email, nome, telefone1, telefone2, telefone3)
-VALUES
-   (1, 'cliente1@example.com', 'Cliente 1', '123456789', NULL, NULL),
-   (2, 'cliente2@example.com', 'Cliente 2', '987654321', NULL, NULL),
-   (3, 'cliente3@example.com', 'Cliente 3', '456789123', NULL, NULL);
-
--- Inserção dos Dados na tabela envios.
-
-INSERT INTO Lojas.envios (envio_id, loja_id, cliente_id, endereco_entrega, status)
-VALUES
-   (1, 1, 1, 'Endereço de entrega 1', 'ENVIADO'),
-   (2, 2, 2, 'Endereço de entrega 2', 'TRANSITO'),
-   (3, 3, 3, 'Endereço de entrega 3', 'ENTREGUE');
-
--- Inserção dos Dados na tabela pedidos.
-
-INSERT INTO Lojas.pedidos (pedido_id, data_hora, cliente_id, status, loja_id)
-VALUES
-   (1, current_timestamp, 1, 'ABERTO', 1),
-   (2, current_timestamp, 2, 'COMPLETO', 2),
-   (3, current_timestamp, 3, 'PAGO', 3);
-
--- Inserção dos Dados na tabela pedidos_itens.
-
-INSERT INTO Lojas.pedidos_itens (pedido_id, produto_id, numero_da_linha, preco_unitario, quantidade, envio_id)
-VALUES
-   (1, 1, 1, 9.99, 2, 1),
-   (2, 2, 2, 12.99, 3, 2),
-   (3, 3, 3, 15.99, 1, 3);
