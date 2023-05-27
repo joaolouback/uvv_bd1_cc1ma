@@ -17,10 +17,8 @@
 
  ENCRYPTED PASSWORD '$1$xqNB5ctg$DLQ0sQv4jngw5zSNIzmIB0';
 
-
 COMMENT ON ROLE jpestevao
-
-       IS 'Este é um usuário administrativo do BD UVV.';
+IS 'Este é um usuário administrativo do BD UVV.';
 
 
 
@@ -50,18 +48,18 @@ allow_connections = true;
 
 
 COMMENT ON DATABASE uvv
-
-       IS 'Banco de Dados UVV.';
-
+IS 'Banco de Dados UVV.';
 
 
---- Garante privilegios ao usuario jpestevao.
+
+--Garante privilegios ao usuario jpestevao
 
 GRANT ALL PRIVILEGES ON DATABASE uvv TO jpestevao;
 
 
 
--- Comando usado para acessar o banco de dados.
+
+--- Acesso ao BD UVV com o Usuário jpestevao.
 
 \c "dbname=uvv user=jpestevao password=$1$xqNB5ctg$DLQ0sQv4jngw5zSNIzmIB0";
 
@@ -108,14 +106,12 @@ CREATE TABLE Lojas.produtos (
        CONSTRAINT produtos_pk PRIMARY KEY (produto_id)
 );
 
-COMMENT ON TABLE Lojas.produtos
-IS 'Esta tabela armazena informações dos produtos disponíveis na loja.';
-
-
 ALTER TABLE Lojas.produtos
 ADD CONSTRAINT preco_check
   CHECK (preco_unitario >= 0);
 
+COMMENT ON TABLE Lojas.produtos
+IS 'Esta tabela armazena informações dos produtos disponíveis na loja.';
 
 COMMENT ON COLUMN Lojas.produtos.produto_id IS 'Identificador do produto (chave primaria)';
 COMMENT ON COLUMN Lojas.produtos.nome IS 'Nome do produto';
@@ -146,14 +142,13 @@ CREATE TABLE Lojas.lojas (
        CONSTRAINT lojas_pk PRIMARY KEY (loja_id)
 );
 
-COMMENT ON TABLE Lojas.lojas
-IS 'Esta tabela armazena informações das lojas cadastradas.';
-
-
 ALTER TABLE Lojas.lojas
 ADD CONSTRAINT endereco_check
 CHECK (endereco_web IS NOT NULL OR endereco_fisico IS NOT NULL);
 
+
+COMMENT ON TABLE Lojas.lojas
+IS 'Esta tabela armazena informações das lojas cadastradas.';
 
 COMMENT ON COLUMN Lojas.lojas.loja_id IS 'Identificador da loja ( chave primaria)';
 COMMENT ON COLUMN Lojas.lojas.nome IS 'Nome da loja';
@@ -182,11 +177,6 @@ CREATE TABLE Lojas.estoques (
 COMMENT ON TABLE Lojas.estoques
 IS 'Esta tabela armazena informações de estoque dos produtos em cada loja.';
 
-ALTER TABLE lojas.estoques
-ADD CONSTRAINT quantidade_check
-  CHECK (quantidade >= 0);
-
-  
 ALTER TABLE Lojas.estoques ADD CONSTRAINT lojas_estoques_fk
 FOREIGN KEY (loja_id)
 REFERENCES Lojas.lojas (loja_id)
@@ -201,7 +191,9 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-
+ALTER TABLE lojas.estoques
+ADD CONSTRAINT quantidade_check
+  CHECK (quantidade >= 0);
 
 COMMENT ON COLUMN Lojas.estoques.estoque_id IS 'Identificado do estoque (chave primaria)';
 COMMENT ON COLUMN Lojas.estoques.loja_id IS 'Identificador da loja (chave estrangeira referenciando a tabela lojas)';
@@ -245,14 +237,12 @@ CREATE TABLE Lojas.envios (
        CONSTRAINT envios_pk PRIMARY KEY (envio_id)
 );
 
-COMMENT ON TABLE Lojas.envios
-IS 'Esta tabela armazena informações sobre os envios de produtos para os clientes.';
-
-
 ALTER TABLE Lojas.envios
 ADD CONSTRAINT envios_status_check
 CHECK (status IN ('CRIADO', 'ENVIADO', 'TRANSITO', 'ENTREGUE'));
 
+COMMENT ON TABLE Lojas.envios
+IS 'Esta tabela armazena informações sobre os envios de produtos para os clientes.';
 
 ALTER TABLE Lojas.envios ADD CONSTRAINT lojas_envios_fk
 FOREIGN KEY (loja_id)
@@ -287,14 +277,13 @@ CREATE TABLE Lojas.pedidos (
        CONSTRAINT pedidos_pk PRIMARY KEY (pedido_id)
 );
 
-COMMENT ON TABLE Lojas.pedidos
-IS 'Esta tabela armazena informações sobre os pedidos realizados pelos clientes.';
-
-
 ALTER TABLE Lojas.pedidos
 ADD CONSTRAINT pedidos_status_check
 CHECK (status IN ('CANCELADO', 'COMPLETO', 'ABERTO', 'PAGO', 'REEMBOLSADO', 'ENVIADO'));
 
+
+COMMENT ON TABLE Lojas.pedidos
+IS 'Esta tabela armazena informações sobre os pedidos realizados pelos clientes.';
 
 ALTER TABLE Lojas.pedidos ADD CONSTRAINT clientes_pedidos_fk
 FOREIGN KEY (cliente_id)
@@ -333,6 +322,10 @@ CREATE TABLE Lojas.pedidos_itens (
 COMMENT ON TABLE Lojas.pedidos_itens
 IS 'Esta tabela armazena os itens de um pedido em uma loja.';
 
+ALTER TABLE lojas.pedidos_itens
+ADD CONSTRAINT quantidade_check
+  CHECK (quantidade >= 0);
+
 ALTER TABLE Lojas.pedidos_itens ADD CONSTRAINT pedidos_pedidos_itens_fk
 FOREIGN KEY (pedido_id)
 REFERENCES Lojas.pedidos (pedido_id)
@@ -353,11 +346,6 @@ REFERENCES Lojas.envios (envio_id)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
-
-ALTER TABLE lojas.pedidos_itens
-ADD CONSTRAINT quantidade_check
-  CHECK (quantidade >= 0);
-
 
 
 COMMENT ON COLUMN Lojas.pedidos_itens.pedido_id IS 'Identificador do pedido (chave composta (PK e FK) referenciando a tabela pedidos)';
