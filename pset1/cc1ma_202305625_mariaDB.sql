@@ -37,6 +37,7 @@ ALTER TABLE Produtos
 add constraint check_preco
 CHECK (preco_unitario >= 0);
 
+
 ALTER TABLE Produtos MODIFY COLUMN produto_id NUMERIC(38) NOT NULL COMMENT 'Identificador do produto (chave primaria)';
 
 ALTER TABLE Produtos MODIFY COLUMN nome_produtos VARCHAR(255) NOT NULL COMMENT 'Nome do produto';
@@ -274,6 +275,10 @@ ALTER TABLE pedidos_itens COMMENT 'Esta tabela armazena os itens de um pedido em
 ALTER TABLE pedidos_itens
 ADD CONSTRAINT check_quantidade_pedidos_itens
 CHECK (quantidade >= 0);
+
+ALTER TABLE pedidos_itens
+add constraint check_preco
+CHECK (preco_unitario >= 0);
 
 ALTER TABLE pedidos_itens ADD CONSTRAINT produtos_pedidos_itens_fk
 FOREIGN KEY (produto_id)
