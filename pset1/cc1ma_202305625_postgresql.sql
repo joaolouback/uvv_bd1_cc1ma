@@ -1,4 +1,8 @@
--- DROP user IF EXISTS jpestevao;
+--- Comando utilizado para excluir um banco de dados se já existir
+DROP DATABASE IF EXISTS uvv;
+
+--- Comando utilizado para excluir um usuário se já existir
+DROP user IF EXISTS jpestevao;
 
 
 --- Criação do usuario jpestevao dono do BD UVV.
@@ -19,12 +23,6 @@
 
 COMMENT ON ROLE jpestevao
 IS 'Este é um usuário administrativo do BD UVV.';
-
-
-
-
--- DROP DATABASE IF EXISTS uvv;
-
 
 
 --- Criação do BD UVV onde sera armazenado as tabelas do projeto Lojas UVV.
@@ -66,8 +64,9 @@ GRANT ALL PRIVILEGES ON DATABASE uvv TO jpestevao;
 
 
 
+-- Comando utilizado para excluir um schema se já existir
 
--- DROP SCHEMA IF EXISTS Lojas;
+DROP SCHEMA IF EXISTS Lojas;
 
 
 --- Criação do schema Lojas onde sera inserido as tabelas.
