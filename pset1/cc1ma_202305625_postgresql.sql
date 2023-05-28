@@ -326,6 +326,10 @@ ALTER TABLE lojas.pedidos_itens
 ADD CONSTRAINT quantidade_check
   CHECK (quantidade >= 0);
 
+ALTER TABLE Lojas.pedidos_itens
+ADD CONSTRAINT preco_check
+  CHECK (preco_unitario >= 0);
+
 ALTER TABLE Lojas.pedidos_itens ADD CONSTRAINT pedidos_pedidos_itens_fk
 FOREIGN KEY (pedido_id)
 REFERENCES Lojas.pedidos (pedido_id)
