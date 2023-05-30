@@ -1,7 +1,7 @@
---- Comando utilizado para excluir um banco de dados se já existir
+--- Comando utilizado para excluir o banco de dados UVV se já existir.
 DROP DATABASE IF EXISTS uvv;
 
---- Comando utilizado para excluir um usuário se já existir
+--- Comando utilizado para excluir o usuário jpestevao se já existir.
 DROP user IF EXISTS jpestevao;
 
 
@@ -22,7 +22,9 @@ DROP user IF EXISTS jpestevao;
  ENCRYPTED PASSWORD '$1$xqNB5ctg$DLQ0sQv4jngw5zSNIzmIB0';
 
 COMMENT ON ROLE jpestevao
-IS 'Este é um usuário administrativo do BD UVV.';
+IS 'Este é um usuário administrativo do BD UVV';
+
+
 
 
 --- Criação do BD UVV onde sera armazenado as tabelas do projeto Lojas UVV.
@@ -50,9 +52,16 @@ IS 'Banco de Dados UVV.';
 
 
 
---Garante privilegios ao usuario jpestevao
+--- Garante privilegios ao usuario jpestevao.
 
 GRANT ALL PRIVILEGES ON DATABASE uvv TO jpestevao;
+
+
+
+
+-- Comando utilizado para excluir o schema Lojas se já existir.
+
+DROP SCHEMA IF EXISTS Lojas;
 
 
 
@@ -62,11 +71,6 @@ GRANT ALL PRIVILEGES ON DATABASE uvv TO jpestevao;
 \c "dbname=uvv user=jpestevao password=$1$xqNB5ctg$DLQ0sQv4jngw5zSNIzmIB0";
 
 
-
-
--- Comando utilizado para excluir um schema se já existir
-
-DROP SCHEMA IF EXISTS Lojas;
 
 
 --- Criação do schema Lojas onde sera inserido as tabelas.
@@ -80,8 +84,7 @@ COMMENT ON SCHEMA Lojas
    IS 'Schemas Lojas.';
 
 
-
-
+--- Comando para alterar o schema Lojas como permanente para o suário jpestevao.
 
 ALTER USER jpestevao
 
@@ -93,7 +96,7 @@ SET SEARCH_PATH TO lojas, "$user", public;
 
 
 CREATE TABLE Lojas.produtos (
-                produto_id NUMERIC(38) NOT NULL,
+       produto_id NUMERIC(38) NOT NULL,
        nome VARCHAR(255) NOT NULL,
        preco_unitario NUMERIC(10,2),
        detalhes BYTEA,
